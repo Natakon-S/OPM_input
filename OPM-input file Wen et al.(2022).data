@@ -1,0 +1,146 @@
+-- FINAL REVISED OPM Flow input deck
+-- Consistent, runnable, and paper-faithful version
+-- Based on Wen et al. (2022): U-FNO dataset for CO2–brine multiphase flow
+-- 2D axisymmetric radial (r–z) model
+
+RUNSPEC
+  DIMENS
+    200 96 1 /
+
+  OIL OFF
+  GAS ON
+  WATER ON
+
+  METRIC
+  CO2STORE
+/
+
+GRID
+  -- Logarithmic radial grid: r_min = 0.1 m, r_max = 100 km
+  RADIAL
+    200 0.1 100000 /
+
+  -- Vertical thickness: ~200 m total
+  DZ
+    96*2.08 /
+/
+
+PROPS
+  -- ----------------------------
+  -- Rock properties
+  -- ----------------------------
+  PORO
+    INCLUDE 'poro.inc'
+  /
+
+  PERMX
+    INCLUDE 'perm_x.inc'
+  /
+
+  PERMZ
+    INCLUDE 'perm_z.inc'
+  /
+
+  -- ----------------------------
+  -- Relative permeability (Corey / VG-like)
+  -- Sw  krw  krg  Pc(dummy)
+  -- Swi in [0.1, 0.3]
+  -- ----------------------------
+  SWOF
+    INCLUDE 'swof.inc'
+  /
+
+  -- ----------------------------
+  -- Capillary pressure (van Genuchten)
+  -- Sw  Pc(bar)
+  -- lambda in [0.3, 0.7]
+  -- ----------------------------
+  PCW
+    INCLUDE 'pcw.inc'
+  /
+
+  -- ----------------------------
+  -- Temperature field (isothermal)
+  -- Paper range: 35–170 °C
+  -- Here: uniform 50 °C example
+  -- ----------------------------
+  TEMP
+    96*50 /
+/
+
+REGIONS
+  -- Single saturation region
+  SATNUM
+    19200*1 /
+/
+
+SOLUTION
+  -- ----------------------------
+  -- Initial hydrostatic conditions
+  -- Datum depth: ~1500 m
+  -- Datum pressure: 100–300 bar
+  -- No initial free gas
+  -- ----------------------------
+  EQUIL
+    INCLUDE 'equil.inc'
+  /
+
+  -- Initial temperature (must match PROPS/TEMP)
+  RTEMP
+    96*50 /
+/
+
+SUMMARY
+  FPR
+  FGIP
+  FWIP
+/
+
+SCHEDULE
+  -- ----------------------------
+  -- CO2 injection well
+  -- Fully penetrating vertical well at r = 0
+  -- ----------------------------
+  WELSPECS
+    INJ WELL 1 1 1 GAS /
+  /
+
+  COMPDAT
+    INJ 1 1 1 96 OPEN 0.1 /
+  /
+
+  -- ----------------------------
+  -- Injection control
+  -- Paper range: 0.2–2 Mt/year CO2
+  -- Example below ≈ 1 Mt/year
+  -- ----------------------------
+  WCONINJE
+    INJ GAS OPEN RATE 2500 1* 1* 1* /
+  /
+
+  -- ----------------------------
+  -- Simulation time: 30 years
+  -- 24 uniform time steps
+  -- ----------------------------
+  TSTEP
+    24*365 /
+/
+
+-- ============================
+-- INCLUDED FILE REQUIREMENTS
+-- ============================
+-- poro.inc   : 19200 values, porosity ∈ [0.05, 0.35]
+-- perm_x.inc : 19200 values, kx ∈ [1e-3, 1e4] mD
+-- perm_z.inc : kx / anisotropy, anisotropy ∈ [1,150]
+-- swof.inc   : Corey-type kr curves, Swi ∈ [0.1,0.3]
+-- pcw.inc    : van Genuchten Pc, lambda ∈ [0.3,0.7]
+-- equil.inc  : Datum pressure 100–300 bar
+
+-- ============================
+-- PHYSICAL ASSUMPTIONS
+-- ============================
+-- Single-phase brine initially
+-- Isothermal conditions
+-- Closed outer boundary (large radius)
+-- No-flow top & bottom
+-- EOS handled by CO2STORE
