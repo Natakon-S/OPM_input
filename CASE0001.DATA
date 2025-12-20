@@ -1,0 +1,116 @@
+-- =========================================================
+-- Wen et al. (2022)
+-- Corner-Point Grid (Geometrically Unstructured)
+-- Final, Ready-to-Run OPM Flow Input
+-- =========================================================
+
+RUNSPEC
+  TITLE
+    Wen2022 CO2 Storage – Corner-Point Grid
+  /
+
+  DIMENS
+    200 96 1 /
+
+  METRIC
+  CO2STORE
+
+  GAS
+  WATER
+/
+
+-- =========================================================
+-- GRID DEFINITION (CORNER-POINT)
+-- =========================================================
+GRID
+  COORD
+    INCLUDE 'coord1 (1).inc'
+  /
+
+  ZCORN
+    INCLUDE 'zcorn1.inc'
+  /
+
+  ACTNUM
+    INCLUDE 'actnum1.inc'
+  /
+/
+
+-- =========================================================
+-- ROCK & FLUID PROPERTIES
+-- =========================================================
+PROPS
+  -- Porosity field
+  PORO
+    INCLUDE 'poro1.inc'
+  /
+
+  -- Permeability fields
+  PERMX
+    INCLUDE 'perm_x1.inc'
+  /
+
+  PERMZ
+    INCLUDE 'perm_z1.inc'
+  /
+
+  -- ---------------------------------
+  -- Relative permeability (Swi = 0.2)
+  -- ---------------------------------
+  SWOF
+    0.20  0.00  1.00  0.0
+    1.00  1.00  0.00  0.0
+  /
+
+  -- ---------------------------------
+  -- Capillary pressure (lambda = 0.5)
+  -- ---------------------------------
+  PCW
+    0.0  0.0
+    1.0  0.5
+  /
+/
+
+-- =========================================================
+-- INITIAL CONDITIONS
+-- =========================================================
+SOLUTION
+  -- Hydrostatic initialization
+  -- Pinit = 200 bar at reservoir top
+  EQUIL
+    200.0  200.0  0.0  0.0  0.0 /
+  /
+
+  -- Uniform reservoir temperature
+  RTEMP
+    96*50.0 /
+/
+
+-- =========================================================
+-- SCHEDULE
+-- =========================================================
+SCHEDULE
+  -- Injection well at axis
+  WELSPECS
+    INJ  FIELD  1 1 1  GAS /
+  /
+
+  -- Partial penetration
+  COMPDAT
+    INJ  1 1 40 50  OPEN  0.1 /
+  /
+
+  -- Rate-controlled CO2 injection
+  WCONINJE
+    INJ  GAS  OPEN  RATE  2600  1*  1*  1* /
+  /
+
+  -- Logarithmic time stepping
+  TSTEP
+    1 2 4 8 16
+    32 64 128 256
+    512 1024 2048
+    4096 8192
+    16384 32768
+  /
+/
