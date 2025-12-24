@@ -1,0 +1,86 @@
+RUNSPEC
+DIMENS
+ 300 300 10 /
+
+OIL
+WATER
+
+METRIC /
+
+START
+ 1 'JAN' 2025 /
+
+TABDIMS
+ 1 1 20 20 /
+
+GRID
+-- Uniform Cartesian grid
+DX
+ 900000*100.0 /
+
+DY
+ 900000*100.0 /
+
+DZ
+ 900000*5.0 /
+
+TOPS
+ 900000*0.0 /
+
+-- ROCK PROPERTIES
+PORO
+ 900000*0.25 /
+
+PERMX
+ 900000*100.0 /
+
+PERMY
+ 900000*100.0 /
+
+PERMZ
+ 900000*10.0 /
+
+PROPS
+SWOF
+ 0.20   0.00  1.00  0.0
+ 0.30   0.10  0.90  0.0
+ 0.50   0.40  0.60  0.0
+ 0.70   0.80  0.20  0.0
+ 1.00   1.00  0.00  0.0
+ /
+
+PVTW
+ 1.0 1.0 0.0 0.0 0.0 /
+
+PVTO
+ 1.0 1.0 1.0 /
+
+DENSITY
+ 1000.0 800.0 1.0 /
+
+SOLUTION
+EQUIL
+ 200.0  100.0  0.0  0.0  0.0 /
+
+SCHEDULE
+WELSPECS
+ 'P1' 'FIELD' 150 150 5 'OIL' /
+ 'I1' 'FIELD'  50  50 5 'WATER' /
+ /
+
+COMPDAT
+ 'P1' 150 150 1 10 'OPEN' 1* 1.0 0.5 /
+ 'I1'  50  50 1 10 'OPEN' 1* 1.0 0.5 /
+ /
+
+WCONPROD
+ 'P1' 'OPEN' 'ORAT' 5000 4* /
+ /
+
+WCONINJE
+ 'I1' 'WATER' 'OPEN' 'RATE' 3000 1* /
+ /
+
+TSTEP
+ 30 30 30 30 30 30 /
+ /
